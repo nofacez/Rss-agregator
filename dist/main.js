@@ -1,0 +1,1 @@
+console.log({hp:"low",mana:"full"});
