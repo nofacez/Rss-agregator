@@ -1,0 +1,24 @@
+name: lint
+
+on:
+  - push
+
+jobs:
+  build:
+    name: Run ESLint
+    runs-on: ubuntu-latest
+    steps:
+      
+      # Check out the repository
+
+      - uses: actions/checkout@v1
+
+      - name: npm install
+        run: |
+          make install
+      - name: Run Linter
+        run: |
+          make lint
+      - name: Run tests
+        run: |
+          make tests
