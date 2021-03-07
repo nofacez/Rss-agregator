@@ -4,7 +4,8 @@
   "description": "[![Actions Status](https://github.com/nofacez/frontend-project-lvl3/workflows/hexlet-check/badge.svg)](https://github.com/nofacez/frontend-project-lvl3/actions)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack",
+    "start": "webpack serve"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,14 @@
   },
   "homepage": "https://github.com/nofacez/frontend-project-lvl3#readme",
   "devDependencies": {
+    "@babel/core": "^7.13.8",
+    "@babel/preset-env": "^7.13.9",
+    "babel-loader": "^8.2.2",
+    "bootstrap": "^5.0.0-beta2",
+    "eslint": "^7.21.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "html-webpack-plugin": "^5.2.0",
     "webpack": "^5.24.3",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"
