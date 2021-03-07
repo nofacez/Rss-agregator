@@ -25,7 +25,6 @@
     "babel-loader": "^8.2.2",
     "bootstrap": "^5.0.0-beta2",
     "html-webpack-plugin": "^5.2.0",
-    "make": "^0.8.1",
     "webpack": "^5.24.3",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"
@@ -33,6 +32,7 @@
   "dependencies": {
     "eslint": "^7.21.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1"
+    "eslint-plugin-import": "^2.22.1",
+    "make": "^0.8.1"
   }
 }
