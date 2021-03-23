@@ -16,10 +16,7 @@ const schema = yup.string().url();
 
 const state = {
   form: {
-    state: {
-      status: 'invalid',
-      type: 'initial',
-    },
+    status: 'initial',
     value: '',
     feedList: [],
   },
@@ -59,38 +56,33 @@ btn.addEventListener('click', (e) => {
   const url = watchedState.form.value;
   //  URL validation
   console.log(state);
-  watchedState.form.state.type = 'checking';
+  watchedState.form.status = 'checking';
   schema.isValid(url).then((valid) => {
     if (valid) {
       if (watchedState.form.feedList.includes(url)) {
-        watchedState.form.state.status = 'invalid';
-        watchedState.form.state.type = 'alreadyAddedRss';
+        watchedState.form.status = 'alreadyAddedRss';
       } else {
         axios.get(formatUrl(url))
           .then((response) => {
             const rssContent = response.data.contents;
             const parsingResult = parseRss(rssContent);
             if (parsingResult === 'invalid') {
-              watchedState.form.state.status = 'invalid';
-              watchedState.form.state.type = 'missingRss';
+              watchedState.form.status = 'missingRss';
             } else {
               const id = _.uniqueId();
               watchedState.form.feedList.unshift(url);
               watchedState.rss.unshift({ id, ...parsingResult });
-              watchedState.form.state.status = 'valid';
-              watchedState.form.state.type = 'success';
+              watchedState.form.status = 'success';
               console.log(state);
             }
           })
           .catch((error) => {
             console.log(error);
-            watchedState.form.state.status = 'invalid';
-            watchedState.form.state.type = 'networkProblems';
+            watchedState.form.status = 'networkProblems';
           });
       }
     } else {
-      watchedState.form.state.status = 'invalid';
-      watchedState.form.state.type = 'invalidUrl';
+      watchedState.form.status = 'invalidUrl';
     }
   });
 });

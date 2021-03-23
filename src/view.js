@@ -7,15 +7,15 @@ const input = document.querySelector('input');
 
 const getFeedback = (status, feedback) => {
   const div = document.querySelector('.feedback');
-  if (status === 'invalid') {
-    input.classList.add('is-invalid');
-    div.classList.add('text-danger');
-  } else {
+  // reset form input if loaded successfully
+  if (status === 'success') {
     form[0].reset();
     div.classList.remove('text-danger');
     input.classList.remove('is-invalid');
     div.classList.add('text-success');
-    // reset form input if loaded successfully
+  } else {
+    input.classList.add('is-invalid');
+    div.classList.add('text-danger');
   }
   div.innerHTML = feedback;
 };
@@ -70,11 +70,11 @@ const getPosts = ({ rss }) => {
 };
 
 const view = (state) => onChange(state, (path) => {
-  if (path === 'form.state.type') {
-    const { status, type } = state.form.state;
-    const feedbackText = state.errors[type];
-    if (type === 'checking') return;
-    if (type === 'success') {
+  if (path === 'form.status') {
+    const { status } = state.form;
+    const feedbackText = state.errors[status];
+    if (status === 'checking') return;
+    if (status === 'success') {
       getFeeds(state);
       getPosts(state);
     }
