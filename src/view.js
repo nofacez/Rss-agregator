@@ -1,4 +1,6 @@
-import onChange from 'on-change';
+// import onChange from 'on-change';
+// import i18next from 'i18next';
+// import ru from './locales/ru';
 
 const form = document.getElementsByClassName('rss-form');
 const feedsEl = document.querySelector('.feeds');
@@ -69,17 +71,22 @@ const getPosts = ({ rss }) => {
   });
 };
 
-const view = (state) => onChange(state, (path) => {
+const render = (state, path, t) => {
   if (path === 'form.status') {
     const { status } = state.form;
-    const feedbackText = state.errors[status];
-    if (status === 'checking') return;
-    if (status === 'success') {
-      getFeeds(state);
-      getPosts(state);
+    const feedbackText = t(`errors.${status}`);
+    switch (status) {
+      case 'checking':
+        break;
+      case 'success':
+        getFeeds(state);
+        getPosts(state);
+        getFeedback(status, feedbackText);
+        break;
+      default:
+        getFeedback(status, feedbackText);
     }
-    getFeedback(status, feedbackText);
   }
-});
+};
 
-export default view;
+export default render;

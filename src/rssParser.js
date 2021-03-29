@@ -3,6 +3,11 @@ export default (strXML) => {
   const newDocument = domparser.parseFromString(strXML, 'text/xml');
   const titleEl = newDocument.querySelector('title');
   console.log(newDocument);
+  let status;
+  if (newDocument.firstChild.tagName !== 'rss') {
+    status = 'missingRss';
+    return { status };
+  }
   const descriptionEl = newDocument.querySelector('description');
   const title = titleEl.textContent;
   const description = descriptionEl.textContent;
@@ -15,7 +20,7 @@ export default (strXML) => {
     const postDescription = post.querySelector('description').textContent;
     return { postTitle, link, postDescription };
   });
-
+  status = 'success';
   const result = { feed: { title, description }, posts };
-  return newDocument.firstChild.tagName === 'rss' ? result : 'invalid';
+  return { status, result };
 };

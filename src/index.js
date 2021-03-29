@@ -3,15 +3,18 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import * as yup from 'yup';
-// import onChange from 'on-change';
+import onChange from 'on-change';
 import axios from 'axios';
 import _ from 'lodash';
+import i18next from 'i18next';
 import parseRss from './rssParser.js';
-import view from './view.js';
+import ru from './locales/ru';
+import render from './view.js';
 
 const formatUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}`;
-const input = document.querySelector('input');
 
+const input = document.querySelector('input');
+const addRssButton = document.getElementById('button');
 const schema = yup.string().url();
 
 const state = {
@@ -21,72 +24,56 @@ const state = {
     feedList: [],
   },
   rss: [],
-  errors: {
-    success: 'RSS был успешно загружен',
-    networkProblems: 'Проблема с соединением',
-    invalidUrl: 'Ссылка должна быть валидным URL',
-    missingRss: 'Ресурс не содержит валидный RSS',
-    alreadyAddedRss: 'RSS уже добавлен',
-  },
 };
 
-// стало
-const watchedState = view(state);
+i18next
+  .init({
+    lng: 'ru',
+    debug: true,
+    resources: {
+      ru,
+    },
+  })
+  .then((t) => {
+    const watchedState = onChange(state, (path) => render(watchedState, path, t));
 
-// было
-// const watchedState = onChange(state, (path) => {
-//   if (path === 'form.state.type') {
-//     const { status, type } = watchedState.form.state;
-//     const feedbackText = watchedState.errors[type];
-//     // const { rss } = watchedState;
-//     if (type === 'success') {
-//       getFeeds(state);
-//       getPosts(state);
-//       // feedsEl.appendChild(ul);
-//     }
-//     getFeedback(status, feedbackText);
-//   }
-// });
+    addRssButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      const url = watchedState.form.value;
+      //  URL validation
+      console.log(state);
+      watchedState.form.status = 'checking';
+      schema.validate(url).then(() => {
+        if (watchedState.form.feedList.includes(url)) {
+          watchedState.form.status = 'alreadyAddedRss';
+        } else if (watchedState.form.value.length === 0) {
+          watchedState.form.status = 'unfilled';
+        } else {
+          axios.get(formatUrl(url))
+            .then((response) => {
+              const rssContent = response.data.contents;
+              const { status, result } = parseRss(rssContent);
+              if (status === 'success') {
+                const id = _.uniqueId();
+                watchedState.form.feedList.unshift(url);
+                watchedState.rss.unshift({ id, ...result });
+                watchedState.form.value = '';
+              }
+              watchedState.form.status = status;
+            })
+            .catch((error) => {
+              console.log(error);
+              watchedState.form.status = 'networkProblems';
+            });
+        }
+      })
+        .catch((err) => {
+          watchedState.form.status = 'invalidUrl';
+          console.log('HERE', err);
+        });
+    });
 
-// console.log(state);
-
-const btn = document.getElementById('button');
-btn.addEventListener('click', (e) => {
-  e.preventDefault();
-  const url = watchedState.form.value;
-  //  URL validation
-  console.log(state);
-  watchedState.form.status = 'checking';
-  schema.isValid(url).then((valid) => {
-    if (valid) {
-      if (watchedState.form.feedList.includes(url)) {
-        watchedState.form.status = 'alreadyAddedRss';
-      } else {
-        axios.get(formatUrl(url))
-          .then((response) => {
-            const rssContent = response.data.contents;
-            const parsingResult = parseRss(rssContent);
-            if (parsingResult === 'invalid') {
-              watchedState.form.status = 'missingRss';
-            } else {
-              const id = _.uniqueId();
-              watchedState.form.feedList.unshift(url);
-              watchedState.rss.unshift({ id, ...parsingResult });
-              watchedState.form.status = 'success';
-              console.log(state);
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-            watchedState.form.status = 'networkProblems';
-          });
-      }
-    } else {
-      watchedState.form.status = 'invalidUrl';
-    }
+    input.addEventListener('input', (e) => {
+      watchedState.form.value = e.target.value;
+    });
   });
-});
-
-input.addEventListener('input', (e) => {
-  watchedState.form.value = e.target.value;
-});
