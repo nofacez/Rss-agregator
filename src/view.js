@@ -50,7 +50,7 @@ const getPosts = (state, i18next) => {
 
 const getFeeds = (state, i18next) => {
   const ul = document.createElement('ul');
-  ul.classList.add('list-group');
+  ul.classList.add('list-group', 'mb-5');
   feedsEl.innerHTML = '';
   const h2 = document.createElement('h2');
   h2.innerHTML = i18next('content.feedHeader');
