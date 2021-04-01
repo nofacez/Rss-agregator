@@ -34,9 +34,11 @@ const getPosts = (state, i18next) => {
   state.rss.posts.forEach(({ id, postTitle, link }) => {
     const li = document.createElement('li');
     li.classList.add('list-group-item');
-    li.setAttribute('data-id', id);
+    // li.setAttribute('data-id', id);
     const aTag = document.createElement('a');
     aTag.setAttribute('href', link);
+    aTag.setAttribute('data-id', id);
+    aTag.classList.add('font-weight-bold');
     const p = document.createElement('p');
     p.innerHTML = postTitle;
     aTag.appendChild(p);
