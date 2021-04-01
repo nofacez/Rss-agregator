@@ -8,5 +8,9 @@ export default {
       alreadyAddedRss: 'RSS уже добавлен',
       unfilled: 'Введите URL',
     },
+    content: {
+      feedHeader: 'Фиды',
+      postsHeader: 'Посты',
+    },
   },
 };

@@ -7,6 +7,8 @@ const feedsEl = document.querySelector('.feeds');
 const postsEl = document.querySelector('.posts');
 const input = document.querySelector('input');
 
+const addRssButton = document.getElementById('button');
+
 const getFeedback = (status, feedback) => {
   const div = document.querySelector('.feedback');
   // reset form input if loaded successfully
@@ -22,16 +24,36 @@ const getFeedback = (status, feedback) => {
   div.innerHTML = feedback;
 };
 
-const getFeeds = ({ rss }) => {
+const getPosts = (state, i18next) => {
+  const ul = document.createElement('ul');
+  ul.classList.add('list-group');
+  postsEl.innerHTML = '';
+  const h2 = document.createElement('h2');
+  h2.innerHTML = i18next('content.postsHeader');
+  postsEl.appendChild(h2);
+  state.rss.posts.forEach(({ id, postTitle, link }) => {
+    const li = document.createElement('li');
+    li.classList.add('list-group-item');
+    li.setAttribute('data-id', id);
+    const aTag = document.createElement('a');
+    aTag.setAttribute('href', link);
+    const p = document.createElement('p');
+    p.innerHTML = postTitle;
+    aTag.appendChild(p);
+    li.appendChild(aTag);
+    ul.prepend(li);
+  });
+  postsEl.appendChild(ul);
+};
+
+const getFeeds = (state, i18next) => {
   const ul = document.createElement('ul');
   ul.classList.add('list-group');
   feedsEl.innerHTML = '';
   const h2 = document.createElement('h2');
-  h2.innerHTML = 'Фиды';
+  h2.innerHTML = i18next('content.feedHeader');
   feedsEl.appendChild(h2);
-  rss.forEach(({ id, feed }) => {
-    console.log('feed', feed);
-    const { title, description } = feed;
+  state.rss.feeds.forEach(({ id, title, description }) => {
     const li = document.createElement('li');
     li.classList.add('list-group-item');
     li.setAttribute('data-id', id);
@@ -41,46 +63,28 @@ const getFeeds = ({ rss }) => {
     p.innerHTML = description;
     li.appendChild(h3);
     li.appendChild(p);
-    ul.appendChild(li);
+    ul.prepend(li);
   });
   feedsEl.appendChild(ul);
 };
 
-const getPosts = ({ rss }) => {
-  const ul = document.createElement('ul');
-  ul.classList.add('list-group');
-  postsEl.innerHTML = '';
-  const h2 = document.createElement('h2');
-  h2.innerHTML = 'Посты';
-  postsEl.appendChild(h2);
-  rss.forEach(({ id, posts }) => {
-    posts.forEach(({ postTitle, link }) => {
-      console.log(postTitle);
-      const li = document.createElement('li');
-      li.classList.add('list-group-item');
-      li.setAttribute('data-id', id);
-      const aTag = document.createElement('a');
-      aTag.setAttribute('href', link);
-      const p = document.createElement('p');
-      p.innerHTML = postTitle;
-      aTag.appendChild(p);
-      li.appendChild(aTag);
-      ul.appendChild(li);
-    });
-    postsEl.appendChild(ul);
-  });
+const renderRssContent = (state, i18next) => {
+  getFeeds(state, i18next);
+  getPosts(state, i18next);
 };
 
-const render = (state, path, t) => {
+const render = (state, path, i18next, updateRss) => {
   if (path === 'form.status') {
     const { status } = state.form;
-    const feedbackText = t(`errors.${status}`);
+    const feedbackText = i18next(`errors.${status}`);
+    addRssButton.removeAttribute('disabled');
     switch (status) {
       case 'checking':
+        addRssButton.setAttribute('disabled', true);
         break;
       case 'success':
-        getFeeds(state);
-        getPosts(state);
+        renderRssContent(state, i18next);
+        updateRss(state, getPosts, i18next);
         getFeedback(status, feedbackText);
         break;
       default:

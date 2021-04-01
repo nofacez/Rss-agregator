@@ -1,5 +1,5 @@
+/* eslint-disable max-len */
 /* eslint-disable import/extensions */
-// import _ from 'lodash';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import * as yup from 'yup';
@@ -11,11 +11,27 @@ import parseRss from './rssParser.js';
 import ru from './locales/ru';
 import render from './view.js';
 
-const formatUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}`;
+const formatUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}&disableCache=true`;
 
 const input = document.querySelector('input');
 const addRssButton = document.getElementById('button');
 const schema = yup.string().url();
+
+const getNewPosts = (state, renderPosts, i18n) => {
+  const oldPostsLinks = state.rss.posts.map(({ link }) => link);
+  state.form.feedList.forEach(({ id, url }) => {
+    axios.get(formatUrl(url))
+      .then((response) => {
+        const rssContent = response.data.contents;
+        const { posts } = parseRss(rssContent);
+        const newPosts = posts
+          .map((item) => ({ id, ...item }))
+          .filter(({ link }) => !_.includes(oldPostsLinks, link));
+        newPosts.forEach((post) => state.rss.posts.push(post));
+        renderPosts(state, i18n);
+      });
+  });
+};
 
 const state = {
   form: {
@@ -23,7 +39,17 @@ const state = {
     value: '',
     feedList: [],
   },
-  rss: [],
+  rss: {
+    feeds: [],
+    posts: [],
+  },
+};
+
+const timeoutCheckForNewPosts = (watchedState, renderPosts, i18n) => {
+  setTimeout(() => {
+    getNewPosts(watchedState, renderPosts, i18n);
+    timeoutCheckForNewPosts(watchedState, renderPosts, i18n);
+  }, 5000);
 };
 
 i18next
@@ -34,8 +60,8 @@ i18next
       ru,
     },
   })
-  .then((t) => {
-    const watchedState = onChange(state, (path) => render(watchedState, path, t));
+  .then((translationFunction) => {
+    const watchedState = onChange(state, (path) => render(state, path, translationFunction, timeoutCheckForNewPosts));
 
     addRssButton.addEventListener('click', (e) => {
       e.preventDefault();
@@ -52,11 +78,12 @@ i18next
           axios.get(formatUrl(url))
             .then((response) => {
               const rssContent = response.data.contents;
-              const { status, result } = parseRss(rssContent);
+              const { status, feed, posts } = parseRss(rssContent, url);
               if (status === 'success') {
                 const id = _.uniqueId();
-                watchedState.form.feedList.unshift(url);
-                watchedState.rss.unshift({ id, ...result });
+                watchedState.form.feedList.unshift({ id, url });
+                watchedState.rss.feeds.push({ id, ...feed });
+                posts.forEach((post) => watchedState.rss.posts.push({ id, ...post }));
                 watchedState.form.value = '';
               }
               watchedState.form.status = status;
