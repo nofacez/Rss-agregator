@@ -34,23 +34,6 @@ const getNewPosts = (state, renderPosts, i18n) => {
   });
 };
 
-const state = {
-  form: {
-    status: 'initial',
-    value: '',
-    feedList: [],
-  },
-  rss: {
-    feeds: [],
-    posts: [],
-    modal: {
-      title: '',
-      description: '',
-      link: '',
-    },
-  },
-};
-
 const timeoutCheckForNewPosts = (watchedState, renderPosts, i18n) => {
   setTimeout(() => {
     getNewPosts(watchedState, renderPosts, i18n);
@@ -58,57 +41,78 @@ const timeoutCheckForNewPosts = (watchedState, renderPosts, i18n) => {
   }, 5000);
 };
 
-i18next
-  .init({
-    lng: 'ru',
-    debug: true,
-    resources: {
-      ru,
+const launch = () => {
+  const state = {
+    form: {
+      status: 'initial',
+      value: '',
+      feedList: [],
     },
-  })
-  .then((translationFunction) => {
-    const watchedState = onChange(state, (path) => render(watchedState, path, translationFunction, timeoutCheckForNewPosts));
+    rss: {
+      feeds: [],
+      posts: [],
+      modal: {
+        title: '',
+        description: '',
+        link: '',
+      },
+    },
+  };
 
-    addRssButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      const url = watchedState.form.value;
-      //  URL validation
-      console.log(state);
-      watchedState.form.status = 'checking';
-      schema.validate(url).then(() => {
-        if (watchedState.form.feedList.includes(url)) {
-          watchedState.form.status = 'alreadyAddedRss';
-        } else if (watchedState.form.value.length === 0) {
-          watchedState.form.status = 'unfilled';
-        } else {
-          axios.get(formatUrl(url))
-            .then((response) => {
-              const rssContent = response.data.contents;
-              const { status, feed, posts } = parseRss(rssContent, url);
-              if (status === 'success') {
-                watchedState.form.feedList.unshift({ url });
-                watchedState.rss.feeds.push({ ...feed });
-                posts.forEach((post) => {
-                  const id = _.uniqueId();
-                  watchedState.rss.posts.push({ id, ...post, status: 'unread' });
-                });
-                watchedState.form.value = '';
-              }
-              watchedState.form.status = status;
-            })
-            .catch((error) => {
-              console.log(error);
-              watchedState.form.status = 'networkProblems';
-            });
-        }
-      })
-        .catch((err) => {
-          watchedState.form.status = 'invalidUrl';
-          console.log('HERE', err);
-        });
-    });
+  i18next
+    .init({
+      lng: 'ru',
+      debug: true,
+      resources: {
+        ru,
+      },
+    })
+    .then((translationFunction) => {
+      const watchedState = onChange(state, (path) => render(watchedState, path, translationFunction, timeoutCheckForNewPosts));
 
-    input.addEventListener('input', (e) => {
-      watchedState.form.value = e.target.value;
+      addRssButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        const url = watchedState.form.value;
+        //  URL validation
+        console.log(state);
+        watchedState.form.status = 'checking';
+        schema.validate(url).then(() => {
+          if (watchedState.form.feedList.includes(url)) {
+            watchedState.form.status = 'alreadyAddedRss';
+          } else if (watchedState.form.value.length === 0) {
+            watchedState.form.status = 'unfilled';
+          } else {
+            axios.get(formatUrl(url))
+              .then((response) => {
+                const rssContent = response.data.contents;
+                const { status, feed, posts } = parseRss(rssContent, url);
+                if (status === 'success') {
+                  watchedState.form.feedList.unshift({ url });
+                  watchedState.rss.feeds.push({ ...feed });
+                  posts.forEach((post) => {
+                    const id = _.uniqueId();
+                    watchedState.rss.posts.push({ id, ...post, status: 'unread' });
+                  });
+                  watchedState.form.value = '';
+                }
+                watchedState.form.status = status;
+              })
+              .catch((error) => {
+                console.log(error);
+                watchedState.form.status = 'networkProblems';
+              });
+          }
+        })
+          .catch((err) => {
+            watchedState.form.status = 'invalidUrl';
+            console.log('HERE', err);
+          });
+      });
+
+      input.addEventListener('input', (e) => {
+        watchedState.form.value = e.target.value;
+      });
     });
-  });
+};
+
+launch();
