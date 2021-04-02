@@ -1,6 +1,9 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable object-curly-newline */
 // import onChange from 'on-change';
 // import i18next from 'i18next';
 // import ru from './locales/ru';
+import _ from 'lodash';
 
 const form = document.getElementsByClassName('rss-form');
 const feedsEl = document.querySelector('.feeds');
@@ -9,7 +12,7 @@ const input = document.querySelector('input');
 
 const addRssButton = document.getElementById('button');
 
-const getFeedback = (status, feedback) => {
+const renderFeedback = (status, feedback) => {
   const div = document.querySelector('.feedback');
   // reset form input if loaded successfully
   if (status === 'success') {
@@ -24,41 +27,78 @@ const getFeedback = (status, feedback) => {
   div.innerHTML = feedback;
 };
 
-const getPosts = (state, i18next) => {
+const updateModal = (state) => {
+  const modalTitle = document.querySelector('#modalTitle');
+  const modalBody = document.querySelector('.modal-body');
+  const modalLink = document.querySelector('.full-article');
+  modalTitle.innerHTML = '';
+  modalBody.innerHTML = '';
+  modalTitle.textContent = state.rss.modal.title;
+  const modalDesctiption = document.createElement('p');
+  modalDesctiption.innerHTML = state.rss.modal.description;
+  modalLink.setAttribute('href', state.rss.modal.link);
+  modalBody.appendChild(modalDesctiption);
+};
+
+const renderPosts = (state, i18next) => {
   const ul = document.createElement('ul');
   ul.classList.add('list-group');
   postsEl.innerHTML = '';
   const h2 = document.createElement('h2');
   h2.innerHTML = i18next('content.postsHeader');
   postsEl.appendChild(h2);
-  state.rss.posts.forEach(({ id, postTitle, link }) => {
+  state.rss.posts.forEach(({ id, postTitle, link, postDescription, status }) => {
     const li = document.createElement('li');
-    li.classList.add('list-group-item');
-    // li.setAttribute('data-id', id);
+    li.classList.add('list-group-item', 'justify-content-between', 'aligh-items-start', 'd-flex');
     const aTag = document.createElement('a');
+    const previewButton = document.createElement('button');
+    previewButton.textContent = i18next('buttons.previewButton');
+    previewButton.setAttribute('type', 'button');
+    previewButton.setAttribute('data-toggle', 'modal');
+    previewButton.setAttribute('data-target', '#modal');
+    previewButton.setAttribute('data-id', id);
+    previewButton.classList.add('btn', 'btn-primary', 'btn-sm');
+    previewButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log(e);
+      console.log(state.rss.posts);
+      console.log(id);
+      const currentPost = _.find(state.rss.posts, ['id', id]);
+      const currentPostIndex = _.findIndex(state.rss.posts, ['id', id]);
+      state.form.status = 'openedModal';
+      state.rss.posts[currentPostIndex].status = 'read';
+      state.rss.modal.title = postTitle;
+      state.rss.modal.description = postDescription;
+      state.rss.modal.link = link;
+      console.log(currentPost);
+      console.log(state);
+      updateModal(state);
+      renderPosts(state, i18next);
+    });
     aTag.setAttribute('href', link);
     aTag.setAttribute('data-id', id);
-    aTag.classList.add('font-weight-bold');
+    const postTextWeight = status === 'read' ? 'font-weight-normal' : 'font-weight-bold';
+    aTag.classList.add(postTextWeight);
     const p = document.createElement('p');
     p.innerHTML = postTitle;
     aTag.appendChild(p);
     li.appendChild(aTag);
+    li.appendChild(previewButton);
     ul.prepend(li);
   });
   postsEl.appendChild(ul);
 };
 
-const getFeeds = (state, i18next) => {
+const renderFeeds = (state, i18next) => {
   const ul = document.createElement('ul');
   ul.classList.add('list-group', 'mb-5');
   feedsEl.innerHTML = '';
   const h2 = document.createElement('h2');
   h2.innerHTML = i18next('content.feedHeader');
   feedsEl.appendChild(h2);
-  state.rss.feeds.forEach(({ id, title, description }) => {
+  state.rss.feeds.forEach(({ title, description }) => {
     const li = document.createElement('li');
     li.classList.add('list-group-item');
-    li.setAttribute('data-id', id);
     const h3 = document.createElement('h3');
     const p = document.createElement('p');
     h3.innerHTML = title;
@@ -71,8 +111,8 @@ const getFeeds = (state, i18next) => {
 };
 
 const renderRssContent = (state, i18next) => {
-  getFeeds(state, i18next);
-  getPosts(state, i18next);
+  renderFeeds(state, i18next);
+  renderPosts(state, i18next);
 };
 
 const render = (state, path, i18next, updateRss) => {
@@ -86,11 +126,13 @@ const render = (state, path, i18next, updateRss) => {
         break;
       case 'success':
         renderRssContent(state, i18next);
-        updateRss(state, getPosts, i18next);
-        getFeedback(status, feedbackText);
+        updateRss(state, renderPosts, i18next);
+        renderFeedback(status, feedbackText);
+        break;
+      case 'openedModal':
         break;
       default:
-        getFeedback(status, feedbackText);
+        renderFeedback(status, feedbackText);
     }
   }
 };

@@ -15,6 +15,7 @@ const formatUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${en
 
 const input = document.querySelector('input');
 const addRssButton = document.getElementById('button');
+// const previewButton = document.querySelector('button[data-toggle=modal]');
 const schema = yup.string().url();
 
 const getNewPosts = (state, renderPosts, i18n) => {
@@ -42,6 +43,11 @@ const state = {
   rss: {
     feeds: [],
     posts: [],
+    modal: {
+      title: '',
+      description: '',
+      link: '',
+    },
   },
 };
 
@@ -61,7 +67,7 @@ i18next
     },
   })
   .then((translationFunction) => {
-    const watchedState = onChange(state, (path) => render(state, path, translationFunction, timeoutCheckForNewPosts));
+    const watchedState = onChange(state, (path) => render(watchedState, path, translationFunction, timeoutCheckForNewPosts));
 
     addRssButton.addEventListener('click', (e) => {
       e.preventDefault();
@@ -80,10 +86,12 @@ i18next
               const rssContent = response.data.contents;
               const { status, feed, posts } = parseRss(rssContent, url);
               if (status === 'success') {
-                const id = _.uniqueId();
-                watchedState.form.feedList.unshift({ id, url });
-                watchedState.rss.feeds.push({ id, ...feed });
-                posts.forEach((post) => watchedState.rss.posts.push({ id, ...post }));
+                watchedState.form.feedList.unshift({ url });
+                watchedState.rss.feeds.push({ ...feed });
+                posts.forEach((post) => {
+                  const id = _.uniqueId();
+                  watchedState.rss.posts.push({ id, ...post, status: 'unread' });
+                });
                 watchedState.form.value = '';
               }
               watchedState.form.status = status;

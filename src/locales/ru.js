@@ -12,5 +12,8 @@ export default {
       feedHeader: 'Фиды',
       postsHeader: 'Посты',
     },
+    buttons: {
+      previewButton: 'Просмотр',
+    },
   },
 };
