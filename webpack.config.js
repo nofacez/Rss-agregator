@@ -8,7 +8,7 @@ module.exports = {
     contentBase: path.join(__dirname, 'dist'),
   },
 
-  entry: './index.js',
+  // entry: '/mnt/c/code/frontend-project-lvl3/src/index.js',
 
   module: {
     rules: [
