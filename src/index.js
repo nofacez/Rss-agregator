@@ -87,7 +87,7 @@ const launch = () => {
                 const rssContent = response.data.contents;
                 const { status, feed, posts } = parseRss(rssContent, url);
                 if (status === 'success') {
-                  watchedState.form.feedList.unshift({ url });
+                  watchedState.form.feedList.unshift(url);
                   watchedState.rss.feeds.push({ ...feed });
                   posts.forEach((post) => {
                     const id = _.uniqueId();
@@ -116,3 +116,5 @@ const launch = () => {
 };
 
 launch();
+
+export default launch;

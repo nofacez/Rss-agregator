@@ -8,6 +8,8 @@ module.exports = {
     contentBase: path.join(__dirname, 'dist'),
   },
 
+  entry: './src/index.js',
+
   module: {
     rules: [
       {
