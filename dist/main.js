@@ -49727,7 +49727,7 @@ const feedsEl = document.querySelector('.feeds');
 const postsEl = document.querySelector('.posts');
 const input = document.querySelector('input');
 
-const addRssButton = document.getElementById('button');
+const addRssButton = document.querySelector('button[name=add]');
 
 const renderFeedback = (status, feedback) => {
   const div = document.querySelector('.feedback');
