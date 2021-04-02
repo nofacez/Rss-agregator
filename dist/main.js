@@ -49512,7 +49512,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   translation: {
     errors: {
-      success: 'RSS был успешно загружен',
+      success: 'RSS успешно загружен',
       networkProblems: 'Проблема с соединением',
       invalidUrl: 'Ссылка должна быть валидным URL',
       missingRss: 'Ресурс не содержит валидный RSS',
