@@ -1,7 +1,5 @@
 /* eslint-disable max-len */
 /* eslint-disable import/extensions */
-import 'bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import * as yup from 'yup';
 import onChange from 'on-change';
 import axios from 'axios';

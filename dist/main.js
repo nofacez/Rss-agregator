@@ -49543,22 +49543,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ "./node_modules/bootstrap/dist/css/bootstrap.min.css");
-/* harmony import */ var yup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! yup */ "./node_modules/yup/es/index.js");
-/* harmony import */ var on_change__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! on-change */ "./node_modules/on-change/index.js");
-/* harmony import */ var on_change__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(on_change__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _rssParser_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./rssParser.js */ "./src/rssParser.js");
-/* harmony import */ var _view_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./view.js */ "./src/view.js");
+/* harmony import */ var yup__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! yup */ "./node_modules/yup/es/index.js");
+/* harmony import */ var on_change__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! on-change */ "./node_modules/on-change/index.js");
+/* harmony import */ var on_change__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(on_change__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _rssParser_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./rssParser.js */ "./src/rssParser.js");
+/* harmony import */ var _view_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./view.js */ "./src/view.js");
 /* eslint-disable max-len */
 /* eslint-disable import/extensions */
-
-
 
 
 
@@ -49573,20 +49568,20 @@ const formatUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${en
 const input = document.querySelector('input');
 const addRssButton = document.getElementById('button');
 // const previewButton = document.querySelector('button[data-toggle=modal]');
-const schema = yup__WEBPACK_IMPORTED_MODULE_2__.string().url();
+const schema = yup__WEBPACK_IMPORTED_MODULE_0__.string().url();
 
 const getNewPosts = (state, renderPosts, i18n) => {
   const oldPostsLinks = state.rss.posts.map(({ link }) => link);
   state.form.feedList.forEach((url) => {
-    axios__WEBPACK_IMPORTED_MODULE_4___default().get(formatUrl(url))
+    axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url))
       .then((response) => {
         // console.log(response);
         const rssContent = response.data.contents;
         // console.log(rssContent);
-        const { posts } = (0,_rssParser_js__WEBPACK_IMPORTED_MODULE_6__.default)(rssContent);
+        const { posts } = (0,_rssParser_js__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent);
         const newPosts = posts
           .map((item) => ({ ...item }))
-          .filter(({ link }) => !lodash__WEBPACK_IMPORTED_MODULE_5___default().includes(oldPostsLinks, link));
+          .filter(({ link }) => !lodash__WEBPACK_IMPORTED_MODULE_3___default().includes(oldPostsLinks, link));
         newPosts.forEach((post) => state.rss.posts.push(post));
         renderPosts(state, i18n);
       });
@@ -49617,7 +49612,7 @@ const start = (t) => {
       },
     },
   };
-  const watchedState = on_change__WEBPACK_IMPORTED_MODULE_3___default()(state, (path) => (0,_view_js__WEBPACK_IMPORTED_MODULE_7__.default)(watchedState, path, t, timeoutCheckForNewPosts));
+  const watchedState = on_change__WEBPACK_IMPORTED_MODULE_1___default()(state, (path) => (0,_view_js__WEBPACK_IMPORTED_MODULE_5__.default)(watchedState, path, t, timeoutCheckForNewPosts));
 
   addRssButton.addEventListener('click', (e) => {
     e.preventDefault();
@@ -49631,15 +49626,15 @@ const start = (t) => {
       } else if (watchedState.form.value.length === 0) {
         watchedState.form.status = 'unfilled';
       } else {
-        axios__WEBPACK_IMPORTED_MODULE_4___default().get(formatUrl(url))
+        axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url))
           .then((response) => {
             const rssContent = response.data.contents;
-            const { status, feed, posts } = (0,_rssParser_js__WEBPACK_IMPORTED_MODULE_6__.default)(rssContent, url);
+            const { status, feed, posts } = (0,_rssParser_js__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent, url);
             if (status === 'success') {
               watchedState.form.feedList.unshift(url);
               watchedState.rss.feeds.push({ ...feed });
               posts.forEach((post) => {
-                const id = lodash__WEBPACK_IMPORTED_MODULE_5___default().uniqueId();
+                const id = lodash__WEBPACK_IMPORTED_MODULE_3___default().uniqueId();
                 watchedState.rss.posts.push({ id, ...post, status: 'unread' });
               });
               watchedState.form.value = '';
