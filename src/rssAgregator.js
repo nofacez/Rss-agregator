@@ -11,11 +11,6 @@ import render from './view.js';
 
 const formatUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}&disableCache=true`;
 
-const input = document.querySelector('input');
-const addRssButton = document.querySelector('button[name=add]');
-// const previewButton = document.querySelector('button[data-toggle=modal]');
-const schema = yup.string().url();
-
 const getNewPosts = (state, renderPosts, i18n) => {
   const oldPostsLinks = state.rss.posts.map(({ link }) => link);
   state.form.feedList.forEach((url) => {
@@ -42,6 +37,10 @@ const timeoutCheckForNewPosts = (watchedState, renderPosts, i18n) => {
 };
 
 const start = (t) => {
+  const input = document.querySelector('input');
+  const addRssButton = document.querySelector('button[name=add]');
+  // const previewButton = document.querySelector('button[data-toggle=modal]');
+  const schema = yup.string().url();
   const state = {
     form: {
       status: 'initial',
