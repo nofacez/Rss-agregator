@@ -32,6 +32,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "@popperjs/core": "^2.9.2",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "eslint": "^7.21.0",
