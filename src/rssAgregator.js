@@ -12,7 +12,7 @@ import render from './view.js';
 const formatUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}&disableCache=true`;
 
 const input = document.querySelector('input');
-const addRssButton = document.getElementById('button');
+const addRssButton = document.querySelector('button[name=add]');
 // const previewButton = document.querySelector('button[data-toggle=modal]');
 const schema = yup.string().url();
 
