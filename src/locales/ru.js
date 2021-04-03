@@ -5,7 +5,7 @@ export default {
       networkProblems: 'Проблема с соединением',
       invalidUrl: 'Ссылка должна быть валидным URL',
       missingRss: 'Ресурс не содержит валидный RSS',
-      alreadyAddedRss: 'RSS уже добавлен',
+      alreadyAddedRss: 'RSS уже существует',
       unfilled: 'Введите URL',
     },
     content: {
