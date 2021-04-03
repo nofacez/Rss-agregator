@@ -23,7 +23,8 @@ const getNewPosts = (state, renderPosts, i18n) => {
         const newPosts = posts
           .map((item) => ({ ...item }))
           .filter(({ link }) => !_.includes(oldPostsLinks, link));
-        newPosts.forEach((post) => state.rss.posts.push(post));
+        console.log(newPosts);
+        newPosts.forEach((post) => state.rss.posts.unshift(post));
         renderPosts(state, i18n);
       });
   });
