@@ -113,13 +113,16 @@ const renderRssContent = (state, i18next) => {
 };
 
 const render = (state, path, i18next, updateRss) => {
+  const input = document.querySelector('input');
   const addRssButton = document.querySelector('button[name=add]');
   if (path === 'form.status') {
     const { status } = state.form;
     const feedbackText = i18next(`errors.${status}`);
     addRssButton.removeAttribute('disabled');
+    input.removeAttribute('readonly');
     switch (status) {
       case 'checking':
+        input.setAttribute('readonly', true);
         addRssButton.setAttribute('disabled', true);
         break;
       case 'success':
