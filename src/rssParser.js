@@ -1,4 +1,5 @@
 /* eslint-disable object-curly-newline */
+import { uniqueId } from 'lodash';
 
 export default (strXML, url) => {
   const domparser = new DOMParser();
@@ -15,10 +16,11 @@ export default (strXML, url) => {
   const postsList = newDocument.querySelectorAll('item');
   const postsArr = Array.from(postsList);
   const posts = postsArr.map((post) => {
+    const id = uniqueId();
     const postTitle = post.querySelector('title').textContent;
     const link = post.querySelector('link').textContent;
     const postDescription = post.querySelector('description').textContent;
-    return { postTitle, link, postDescription, url };
+    return { id, postTitle, link, postDescription, url, status: 'unread' };
   });
   status = 'success';
   // const result = { feed: { title, description }, posts };

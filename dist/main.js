@@ -49632,10 +49632,13 @@ const start = (t) => {
             if (status === 'success') {
               watchedState.form.feedList.unshift(url);
               watchedState.rss.feeds.push({ ...feed });
-              posts.forEach((post) => {
-                const id = lodash__WEBPACK_IMPORTED_MODULE_3___default().uniqueId();
-                watchedState.rss.posts.push({ id, ...post, status: 'unread' });
-              });
+              console.log(posts);
+              const previousPosts = watchedState.rss.posts;
+              watchedState.rss.posts = [...posts, ...previousPosts];
+              // posts.forEach((post) => {
+              //   const id = _.uniqueId();
+              //   watchedState.rss.posts.push({ ...post });
+              // });
               watchedState.form.value = '';
             }
             watchedState.form.status = status;
@@ -49672,7 +49675,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
 /* eslint-disable object-curly-newline */
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((strXML, url) => {
   const domparser = new DOMParser();
@@ -49689,10 +49695,11 @@ __webpack_require__.r(__webpack_exports__);
   const postsList = newDocument.querySelectorAll('item');
   const postsArr = Array.from(postsList);
   const posts = postsArr.map((post) => {
+    const id = (0,lodash__WEBPACK_IMPORTED_MODULE_0__.uniqueId)();
     const postTitle = post.querySelector('title').textContent;
     const link = post.querySelector('link').textContent;
     const postDescription = post.querySelector('description').textContent;
-    return { postTitle, link, postDescription, url };
+    return { id, postTitle, link, postDescription, url, status: 'unread' };
   });
   status = 'success';
   // const result = { feed: { title, description }, posts };
@@ -49797,7 +49804,7 @@ const renderPosts = (state, i18next) => {
     aTag.appendChild(p);
     li.appendChild(aTag);
     li.appendChild(previewButton);
-    ul.prepend(li);
+    ul.appendChild(li);
   });
   postsEl.appendChild(ul);
 };

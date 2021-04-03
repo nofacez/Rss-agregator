@@ -78,10 +78,13 @@ const start = (t) => {
             if (status === 'success') {
               watchedState.form.feedList.unshift(url);
               watchedState.rss.feeds.push({ ...feed });
-              posts.forEach((post) => {
-                const id = _.uniqueId();
-                watchedState.rss.posts.push({ id, ...post, status: 'unread' });
-              });
+              console.log(posts);
+              const previousPosts = watchedState.rss.posts;
+              watchedState.rss.posts = [...posts, ...previousPosts];
+              // posts.forEach((post) => {
+              //   const id = _.uniqueId();
+              //   watchedState.rss.posts.push({ ...post });
+              // });
               watchedState.form.value = '';
             }
             watchedState.form.status = status;

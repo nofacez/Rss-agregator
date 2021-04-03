@@ -80,7 +80,7 @@ const renderPosts = (state, i18next) => {
     aTag.appendChild(p);
     li.appendChild(aTag);
     li.appendChild(previewButton);
-    ul.prepend(li);
+    ul.appendChild(li);
   });
   postsEl.appendChild(ul);
 };
