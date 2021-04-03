@@ -49722,12 +49722,9 @@ __webpack_require__.r(__webpack_exports__);
 // import ru from './locales/ru';
 
 
-const form = document.getElementsByClassName('rss-form');
-const feedsEl = document.querySelector('.feeds');
-const postsEl = document.querySelector('.posts');
-const input = document.querySelector('input');
-
 const renderFeedback = (status, feedback) => {
+  const form = document.getElementsByClassName('rss-form');
+  const input = document.querySelector('input');
   const div = document.querySelector('.feedback');
   // reset form input if loaded successfully
   if (status === 'success') {
@@ -49756,6 +49753,7 @@ const updateModal = (state) => {
 };
 
 const renderPosts = (state, i18next) => {
+  const postsEl = document.querySelector('.posts');
   const ul = document.createElement('ul');
   ul.classList.add('list-group');
   postsEl.innerHTML = '';
@@ -49805,6 +49803,7 @@ const renderPosts = (state, i18next) => {
 };
 
 const renderFeeds = (state, i18next) => {
+  const feedsEl = document.querySelector('.feeds');
   const ul = document.createElement('ul');
   ul.classList.add('list-group', 'mb-5');
   feedsEl.innerHTML = '';
