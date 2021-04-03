@@ -10,8 +10,6 @@ const feedsEl = document.querySelector('.feeds');
 const postsEl = document.querySelector('.posts');
 const input = document.querySelector('input');
 
-const addRssButton = document.querySelector('button[name=add]');
-
 const renderFeedback = (status, feedback) => {
   const div = document.querySelector('.feedback');
   // reset form input if loaded successfully
@@ -116,6 +114,7 @@ const renderRssContent = (state, i18next) => {
 };
 
 const render = (state, path, i18next, updateRss) => {
+  const addRssButton = document.querySelector('button[name=add]');
   if (path === 'form.status') {
     const { status } = state.form;
     const feedbackText = i18next(`errors.${status}`);
