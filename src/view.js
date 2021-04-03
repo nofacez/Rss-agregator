@@ -56,18 +56,13 @@ const renderPosts = (state, i18next) => {
     previewButton.classList.add('btn', 'btn-primary', 'btn-sm');
     previewButton.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log(e);
-      console.log(state.rss.posts);
-      console.log(id);
-      const currentPost = _.find(state.rss.posts, ['id', id]);
+      // const currentPost = _.find(state.rss.posts, ['id', id]);
       const currentPostIndex = _.findIndex(state.rss.posts, ['id', id]);
       state.form.status = 'openedModal';
       state.rss.posts[currentPostIndex].status = 'read';
       state.rss.modal.title = postTitle;
       state.rss.modal.description = postDescription;
       state.rss.modal.link = link;
-      console.log(currentPost);
-      console.log(state);
       updateModal(state);
       renderPosts(state, i18next);
     });

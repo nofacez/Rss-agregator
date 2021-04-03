@@ -49570,14 +49570,11 @@ const getNewPosts = (state, renderPosts, i18n) => {
   state.form.feedList.forEach((url) => {
     axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url))
       .then((response) => {
-        // console.log(response);
         const rssContent = response.data.contents;
-        // console.log(rssContent);
         const { posts } = (0,_rssParser_js__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent);
         const newPosts = posts
           .map((item) => ({ ...item }))
           .filter(({ link }) => !lodash__WEBPACK_IMPORTED_MODULE_3___default().includes(oldPostsLinks, link));
-        console.log(newPosts);
         newPosts.forEach((post) => state.rss.posts.unshift(post));
         renderPosts(state, i18n);
       });
@@ -49618,7 +49615,6 @@ const start = (t) => {
     e.preventDefault();
     const url = watchedState.form.value;
     //  URL validation
-    console.log(state);
     watchedState.form.status = 'checking';
     schema.validate(url).then(() => {
       if (watchedState.form.feedList.includes(url)) {
@@ -49633,7 +49629,6 @@ const start = (t) => {
             if (status === 'success') {
               watchedState.form.feedList.unshift(url);
               watchedState.rss.feeds.push({ ...feed });
-              console.log(posts);
               const previousPosts = watchedState.rss.posts;
               watchedState.rss.posts = [...posts, ...previousPosts];
               // posts.forEach((post) => {
@@ -49644,15 +49639,13 @@ const start = (t) => {
             }
             watchedState.form.status = status;
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(() => {
             watchedState.form.status = 'networkProblems';
           });
       }
     })
-      .catch((err) => {
+      .catch(() => {
         watchedState.form.status = 'invalidUrl';
-        console.log('HERE', err);
       });
   });
 
@@ -49685,10 +49678,8 @@ __webpack_require__.r(__webpack_exports__);
   const domparser = new DOMParser();
   const newDocument = domparser.parseFromString(strXML, 'text/xml');
   const titleEl = newDocument.querySelector('title');
-  let status;
   if (newDocument.firstChild.tagName !== 'rss') {
-    status = 'missingRss';
-    return { status };
+    return { status: 'missingRss' };
   }
   const descriptionEl = newDocument.querySelector('description');
   const title = titleEl.textContent;
@@ -49702,9 +49693,7 @@ __webpack_require__.r(__webpack_exports__);
     const postDescription = post.querySelector('description').textContent;
     return { id, postTitle, link, postDescription, url, status: 'unread' };
   });
-  status = 'success';
-  // const result = { feed: { title, description }, posts };
-  return { status, feed: { title, description, url }, posts };
+  return { status: 'success', feed: { title, description, url }, posts };
 });
 
 
@@ -49781,18 +49770,13 @@ const renderPosts = (state, i18next) => {
     previewButton.classList.add('btn', 'btn-primary', 'btn-sm');
     previewButton.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log(e);
-      console.log(state.rss.posts);
-      console.log(id);
-      const currentPost = lodash__WEBPACK_IMPORTED_MODULE_0___default().find(state.rss.posts, ['id', id]);
+      // const currentPost = _.find(state.rss.posts, ['id', id]);
       const currentPostIndex = lodash__WEBPACK_IMPORTED_MODULE_0___default().findIndex(state.rss.posts, ['id', id]);
       state.form.status = 'openedModal';
       state.rss.posts[currentPostIndex].status = 'read';
       state.rss.modal.title = postTitle;
       state.rss.modal.description = postDescription;
       state.rss.modal.link = link;
-      console.log(currentPost);
-      console.log(state);
       updateModal(state);
       renderPosts(state, i18next);
     });

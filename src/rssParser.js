@@ -5,10 +5,8 @@ export default (strXML, url) => {
   const domparser = new DOMParser();
   const newDocument = domparser.parseFromString(strXML, 'text/xml');
   const titleEl = newDocument.querySelector('title');
-  let status;
   if (newDocument.firstChild.tagName !== 'rss') {
-    status = 'missingRss';
-    return { status };
+    return { status: 'missingRss' };
   }
   const descriptionEl = newDocument.querySelector('description');
   const title = titleEl.textContent;
@@ -22,7 +20,5 @@ export default (strXML, url) => {
     const postDescription = post.querySelector('description').textContent;
     return { id, postTitle, link, postDescription, url, status: 'unread' };
   });
-  status = 'success';
-  // const result = { feed: { title, description }, posts };
-  return { status, feed: { title, description, url }, posts };
+  return { status: 'success', feed: { title, description, url }, posts };
 };

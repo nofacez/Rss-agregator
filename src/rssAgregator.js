@@ -16,14 +16,11 @@ const getNewPosts = (state, renderPosts, i18n) => {
   state.form.feedList.forEach((url) => {
     axios.get(formatUrl(url))
       .then((response) => {
-        // console.log(response);
         const rssContent = response.data.contents;
-        // console.log(rssContent);
         const { posts } = parseRss(rssContent);
         const newPosts = posts
           .map((item) => ({ ...item }))
           .filter(({ link }) => !_.includes(oldPostsLinks, link));
-        console.log(newPosts);
         newPosts.forEach((post) => state.rss.posts.unshift(post));
         renderPosts(state, i18n);
       });
@@ -64,7 +61,6 @@ const start = (t) => {
     e.preventDefault();
     const url = watchedState.form.value;
     //  URL validation
-    console.log(state);
     watchedState.form.status = 'checking';
     schema.validate(url).then(() => {
       if (watchedState.form.feedList.includes(url)) {
@@ -79,7 +75,6 @@ const start = (t) => {
             if (status === 'success') {
               watchedState.form.feedList.unshift(url);
               watchedState.rss.feeds.push({ ...feed });
-              console.log(posts);
               const previousPosts = watchedState.rss.posts;
               watchedState.rss.posts = [...posts, ...previousPosts];
               // posts.forEach((post) => {
@@ -90,15 +85,13 @@ const start = (t) => {
             }
             watchedState.form.status = status;
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(() => {
             watchedState.form.status = 'networkProblems';
           });
       }
     })
-      .catch((err) => {
+      .catch(() => {
         watchedState.form.status = 'invalidUrl';
-        console.log('HERE', err);
       });
   });
 
