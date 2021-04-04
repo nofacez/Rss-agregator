@@ -49492,7 +49492,25 @@ __webpack_require__.r(__webpack_exports__);
         ru: _locales_ru__WEBPACK_IMPORTED_MODULE_2__.default,
       },
     })
-    .then((t) => (0,_rssAgregator_js__WEBPACK_IMPORTED_MODULE_1__.default)(t));
+    .then((t) => {
+      const state = {
+        form: {
+          status: 'initial',
+          value: '',
+          feedList: [],
+        },
+        rss: {
+          feeds: [],
+          posts: [],
+          modal: {
+            title: '',
+            description: '',
+            link: '',
+          },
+        },
+      };
+      (0,_rssAgregator_js__WEBPACK_IMPORTED_MODULE_1__.default)(t, state);
+    });
 });
 
 
@@ -49586,25 +49604,23 @@ const timeoutCheckForNewPosts = (watchedState, renderPosts, i18n) => {
   }, 5000);
 };
 
-
-
-const start = (t) => {
-  const state = {
-    form: {
-      status: 'initial',
-      value: '',
-      feedList: [],
-    },
-    rss: {
-      feeds: [],
-      posts: [],
-      modal: {
-        title: '',
-        description: '',
-        link: '',
-      },
-    },
-  };
+const start = (t, state) => {
+  // const state = {
+  //   form: {
+  //     status: 'initial',
+  //     value: '',
+  //     feedList: [],
+  //   },
+  //   rss: {
+  //     feeds: [],
+  //     posts: [],
+  //     modal: {
+  //       title: '',
+  //       description: '',
+  //       link: '',
+  //     },
+  //   },
+  // };
   const input = document.querySelector('input');
   const addRssButton = document.querySelector('button[name=add]');
   const schema = yup__WEBPACK_IMPORTED_MODULE_0__.string().url();

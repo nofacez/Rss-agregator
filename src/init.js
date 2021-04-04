@@ -12,5 +12,23 @@ export default () => {
         ru,
       },
     })
-    .then((t) => app(t));
+    .then((t) => {
+      const state = {
+        form: {
+          status: 'initial',
+          value: '',
+          feedList: [],
+        },
+        rss: {
+          feeds: [],
+          posts: [],
+          modal: {
+            title: '',
+            description: '',
+            link: '',
+          },
+        },
+      };
+      app(t, state);
+    });
 };
