@@ -49484,33 +49484,32 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (() => {
-  i18next__WEBPACK_IMPORTED_MODULE_0__.default.init({
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => {
+  await i18next__WEBPACK_IMPORTED_MODULE_0__.default.init({
       lng: 'ru',
       debug: true,
       resources: {
         ru: _locales_ru__WEBPACK_IMPORTED_MODULE_2__.default,
       },
-    })
-    .then((t) => {
-      const state = {
-        form: {
-          status: 'initial',
-          value: '',
-          feedList: [],
-        },
-        rss: {
-          feeds: [],
-          posts: [],
-          modal: {
-            title: '',
-            description: '',
-            link: '',
-          },
-        },
-      };
-      (0,_rssAgregator_js__WEBPACK_IMPORTED_MODULE_1__.default)(t, state);
     });
+
+  const state = {
+    form: {
+      status: 'initial',
+      value: '',
+      feedList: [],
+    },
+    rss: {
+      feeds: [],
+      posts: [],
+      modal: {
+        title: '',
+        description: '',
+        link: '',
+      },
+    },
+  };
+  (0,_rssAgregator_js__WEBPACK_IMPORTED_MODULE_1__.default)(state);
 });
 
 
@@ -49581,84 +49580,109 @@ __webpack_require__.r(__webpack_exports__);
 
 const formatUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}&disableCache=true`;
 
-const getNewPosts = (state, renderPosts, i18n) => {
+// const getNewPosts = (state, renderPosts) => {
+//   const oldPostsLinks = state.rss.posts.map(({ link }) => link);
+//   state.form.feedList.forEach((url) => {
+//     axios.get(formatUrl(url))
+//       .then((response) => {
+//         const rssContent = response.data.contents;
+//         const { posts } = parseRss(rssContent);
+//         const newPosts = posts
+//           .map((item) => ({ ...item }))
+//           .filter(({ link }) => !_.includes(oldPostsLinks, link));
+//         newPosts.forEach((post) => state.rss.posts.unshift(post));
+//         renderPosts(state);
+//       });
+//   });
+// };
+
+const getNewPosts = (state, renderPosts) => {
   const oldPostsLinks = state.rss.posts.map(({ link }) => link);
-  state.form.feedList.forEach((url) => {
-    axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url))
-      .then((response) => {
-        const rssContent = response.data.contents;
-        const { posts } = (0,_rssParser_js__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent);
-        const newPosts = posts
-          .map((item) => ({ ...item }))
-          .filter(({ link }) => !lodash__WEBPACK_IMPORTED_MODULE_3___default().includes(oldPostsLinks, link));
-        newPosts.forEach((post) => state.rss.posts.unshift(post));
-        renderPosts(state, i18n);
-      });
+  state.form.feedList.forEach(async (url) => {
+    const response = await axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url));
+    const rssContent = response.data.contents;
+    const { posts } = (0,_rssParser_js__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent);
+    const newPosts = posts
+      .map((item) => ({ ...item }))
+      .filter(({ link }) => !lodash__WEBPACK_IMPORTED_MODULE_3___default().includes(oldPostsLinks, link));
+    newPosts.forEach((post) => state.rss.posts.unshift(post));
+    renderPosts(state);
   });
 };
 
-const timeoutCheckForNewPosts = (watchedState, renderPosts, i18n) => {
+const timeoutCheckForNewPosts = (watchedState, renderPosts) => {
   setTimeout(() => {
-    getNewPosts(watchedState, renderPosts, i18n);
-    timeoutCheckForNewPosts(watchedState, renderPosts, i18n);
+    getNewPosts(watchedState, renderPosts);
+    timeoutCheckForNewPosts(watchedState, renderPosts);
   }, 5000);
 };
 
-const start = (t, state) => {
-  // const state = {
-  //   form: {
-  //     status: 'initial',
-  //     value: '',
-  //     feedList: [],
-  //   },
-  //   rss: {
-  //     feeds: [],
-  //     posts: [],
-  //     modal: {
-  //       title: '',
-  //       description: '',
-  //       link: '',
-  //     },
-  //   },
-  // };
+const start = (state) => {
   const input = document.querySelector('input');
   const addRssButton = document.querySelector('button[name=add]');
   const schema = yup__WEBPACK_IMPORTED_MODULE_0__.string().url();
 
-  const watchedState = on_change__WEBPACK_IMPORTED_MODULE_1___default()(state, (path) => (0,_view_js__WEBPACK_IMPORTED_MODULE_5__.default)(watchedState, path, t, timeoutCheckForNewPosts));
+  const watchedState = on_change__WEBPACK_IMPORTED_MODULE_1___default()(state, (path) => (0,_view_js__WEBPACK_IMPORTED_MODULE_5__.default)(watchedState, path, timeoutCheckForNewPosts));
 
-  addRssButton.addEventListener('click', (e) => {
+  addRssButton.addEventListener('click', async (e) => {
+    console.log(watchedState);
     e.preventDefault();
     const url = watchedState.form.value;
     //  URL validation
     watchedState.form.status = 'checking';
-    schema.validate(url).then(() => {
-      if (watchedState.form.feedList.includes(url)) {
-        watchedState.form.status = 'alreadyAddedRss';
-      } else if (watchedState.form.value.length === 0) {
-        watchedState.form.status = 'unfilled';
-      } else {
-        axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url))
-          .then((response) => {
-            const rssContent = response.data.contents;
-            const { status, feed, posts } = (0,_rssParser_js__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent, url);
-            if (status === 'success') {
-              watchedState.form.feedList.unshift(url);
-              watchedState.rss.feeds.push({ ...feed });
-              const previousPosts = watchedState.rss.posts;
-              watchedState.rss.posts = [...posts, ...previousPosts];
-              watchedState.form.value = '';
-            }
-            watchedState.form.status = status;
-          })
-          .catch(() => {
-            watchedState.form.status = 'networkProblems';
-          });
-      }
-    })
-      .catch(() => {
+    // schema.validate(url).then(() => {
+    //   if (watchedState.form.feedList.includes(url)) {
+    //     watchedState.form.status = 'alreadyAddedRss';
+    //   } else if (watchedState.form.value.length === 0) {
+    //     watchedState.form.status = 'unfilled';
+    //   } else {
+    //     axios.get(formatUrl(url))
+    //       .then((response) => {
+    //         const rssContent = response.data.contents;
+    //         const { status, feed, posts } = parseRss(rssContent, url);
+    //         if (status === 'success') {
+    //           watchedState.form.feedList.unshift(url);
+    //           watchedState.rss.feeds.push({ ...feed });
+    //           const previousPosts = watchedState.rss.posts;
+    //           watchedState.rss.posts = [...posts, ...previousPosts];
+    //           watchedState.form.value = '';
+    //         }
+    //         watchedState.form.status = status;
+    //       })
+    //       .catch(() => {
+    //         watchedState.form.status = 'networkProblems';
+    //       });
+    //   }
+    // })
+    //   .catch(() => {
+    //     watchedState.form.status = 'invalidUrl';
+    //   });
+    if (watchedState.form.feedList.includes(url)) {
+      watchedState.form.status = 'alreadyAddedRss';
+    } else if (watchedState.form.value.length === 0) {
+      watchedState.form.status = 'unfilled';
+    } else {
+      try {
+        await schema.validateSync(url);
+        try {
+          const response = await axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url));
+          const rssContent = response.data.contents;
+          const { status, feed, posts } = (0,_rssParser_js__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent, url);
+          if (status === 'success') {
+            watchedState.form.feedList.unshift(url);
+            watchedState.rss.feeds.push({ ...feed });
+            const previousPosts = watchedState.rss.posts;
+            watchedState.rss.posts = [...posts, ...previousPosts];
+            watchedState.form.value = '';
+          }
+          watchedState.form.status = status;
+        } catch {
+          watchedState.form.status = 'networkProblems';
+        }
+      } catch {
         watchedState.form.status = 'invalidUrl';
-      });
+      }
+    }
   });
 
   input.addEventListener('input', (e) => {
@@ -49724,8 +49748,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var i18next__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! i18next */ "./node_modules/i18next/dist/esm/i18next.js");
 /* eslint-disable no-param-reassign */
 /* eslint-disable object-curly-newline */
+
 
 
 const renderFeedback = (status, feedback) => {
@@ -49758,7 +49784,7 @@ const updateModal = (state) => {
   modalBody.appendChild(modalDesctiption);
 };
 
-const preparePreviewButton = (button, post, state, cb, i18next) => {
+const preparePreviewButton = (button, post, state, cb) => {
   const { id, postTitle, link, postDescription } = post;
   button.setAttribute('type', 'button');
   button.setAttribute('data-toggle', 'modal');
@@ -49775,17 +49801,17 @@ const preparePreviewButton = (button, post, state, cb, i18next) => {
     state.rss.modal.description = postDescription;
     state.rss.modal.link = link;
     updateModal(state);
-    cb(state, i18next);
+    cb(state);
   });
 };
 
-const renderPosts = (state, i18next) => {
+const renderPosts = (state) => {
   const postsEl = document.querySelector('.posts');
   const ul = document.createElement('ul');
   ul.classList.add('list-group');
   postsEl.innerHTML = '';
   const h2 = document.createElement('h2');
-  h2.innerHTML = i18next('content.postsHeader');
+  h2.innerHTML = i18next__WEBPACK_IMPORTED_MODULE_1__.default.t('content.postsHeader');
   postsEl.appendChild(h2);
   state.rss.posts.forEach((post) => {
     const { id, postTitle, link, status } = post;
@@ -49793,8 +49819,8 @@ const renderPosts = (state, i18next) => {
     li.classList.add('list-group-item', 'justify-content-between', 'aligh-items-start', 'd-flex');
     const aTag = document.createElement('a');
     const previewButton = document.createElement('button');
-    previewButton.textContent = i18next('buttons.previewButton');
-    preparePreviewButton(previewButton, post, state, renderPosts, i18next);
+    previewButton.textContent = i18next__WEBPACK_IMPORTED_MODULE_1__.default.t('buttons.previewButton');
+    preparePreviewButton(previewButton, post, state, renderPosts);
     aTag.setAttribute('href', link);
     aTag.setAttribute('data-id', id);
     const postTextWeight = status === 'read' ? 'font-weight-normal' : 'font-weight-bold';
@@ -49809,13 +49835,13 @@ const renderPosts = (state, i18next) => {
   postsEl.appendChild(ul);
 };
 
-const renderFeeds = (state, i18next) => {
+const renderFeeds = (state) => {
   const feedsEl = document.querySelector('.feeds');
   const ul = document.createElement('ul');
   ul.classList.add('list-group', 'mb-5');
   feedsEl.innerHTML = '';
   const h2 = document.createElement('h2');
-  h2.innerHTML = i18next('content.feedHeader');
+  h2.innerHTML = i18next__WEBPACK_IMPORTED_MODULE_1__.default.t('content.feedHeader');
   feedsEl.appendChild(h2);
   state.rss.feeds.forEach(({ title, description }) => {
     const li = document.createElement('li');
@@ -49831,17 +49857,17 @@ const renderFeeds = (state, i18next) => {
   feedsEl.appendChild(ul);
 };
 
-const renderRssContent = (state, i18next) => {
-  renderFeeds(state, i18next);
-  renderPosts(state, i18next);
+const renderRssContent = (state) => {
+  renderFeeds(state);
+  renderPosts(state);
 };
 
-const render = (state, path, i18next, updateRss) => {
+const render = (state, path, updateRss) => {
   const input = document.querySelector('input');
   const addRssButton = document.querySelector('button[name=add]');
   if (path === 'form.status') {
     const { status } = state.form;
-    const feedbackText = i18next(`errors.${status}`);
+    const feedbackText = i18next__WEBPACK_IMPORTED_MODULE_1__.default.t(`errors.${status}`);
     addRssButton.removeAttribute('disabled');
     input.removeAttribute('readonly');
     switch (status) {
@@ -49850,8 +49876,8 @@ const render = (state, path, i18next, updateRss) => {
         addRssButton.setAttribute('disabled', true);
         break;
       case 'success':
-        renderRssContent(state, i18next);
-        updateRss(state, renderPosts, i18next);
+        renderRssContent(state);
+        updateRss(state, renderPosts);
         renderFeedback(status, feedbackText);
         break;
       case 'openedModal':

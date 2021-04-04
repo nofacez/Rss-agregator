@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable object-curly-newline */
 import _ from 'lodash';
+import i18next from 'i18next';
 
 const renderFeedback = (status, feedback) => {
   const form = document.getElementsByClassName('rss-form');
@@ -32,7 +33,7 @@ const updateModal = (state) => {
   modalBody.appendChild(modalDesctiption);
 };
 
-const preparePreviewButton = (button, post, state, cb, i18next) => {
+const preparePreviewButton = (button, post, state, cb) => {
   const { id, postTitle, link, postDescription } = post;
   button.setAttribute('type', 'button');
   button.setAttribute('data-toggle', 'modal');
@@ -49,17 +50,17 @@ const preparePreviewButton = (button, post, state, cb, i18next) => {
     state.rss.modal.description = postDescription;
     state.rss.modal.link = link;
     updateModal(state);
-    cb(state, i18next);
+    cb(state);
   });
 };
 
-const renderPosts = (state, i18next) => {
+const renderPosts = (state) => {
   const postsEl = document.querySelector('.posts');
   const ul = document.createElement('ul');
   ul.classList.add('list-group');
   postsEl.innerHTML = '';
   const h2 = document.createElement('h2');
-  h2.innerHTML = i18next('content.postsHeader');
+  h2.innerHTML = i18next.t('content.postsHeader');
   postsEl.appendChild(h2);
   state.rss.posts.forEach((post) => {
     const { id, postTitle, link, status } = post;
@@ -67,8 +68,8 @@ const renderPosts = (state, i18next) => {
     li.classList.add('list-group-item', 'justify-content-between', 'aligh-items-start', 'd-flex');
     const aTag = document.createElement('a');
     const previewButton = document.createElement('button');
-    previewButton.textContent = i18next('buttons.previewButton');
-    preparePreviewButton(previewButton, post, state, renderPosts, i18next);
+    previewButton.textContent = i18next.t('buttons.previewButton');
+    preparePreviewButton(previewButton, post, state, renderPosts);
     aTag.setAttribute('href', link);
     aTag.setAttribute('data-id', id);
     const postTextWeight = status === 'read' ? 'font-weight-normal' : 'font-weight-bold';
@@ -83,13 +84,13 @@ const renderPosts = (state, i18next) => {
   postsEl.appendChild(ul);
 };
 
-const renderFeeds = (state, i18next) => {
+const renderFeeds = (state) => {
   const feedsEl = document.querySelector('.feeds');
   const ul = document.createElement('ul');
   ul.classList.add('list-group', 'mb-5');
   feedsEl.innerHTML = '';
   const h2 = document.createElement('h2');
-  h2.innerHTML = i18next('content.feedHeader');
+  h2.innerHTML = i18next.t('content.feedHeader');
   feedsEl.appendChild(h2);
   state.rss.feeds.forEach(({ title, description }) => {
     const li = document.createElement('li');
@@ -105,17 +106,17 @@ const renderFeeds = (state, i18next) => {
   feedsEl.appendChild(ul);
 };
 
-const renderRssContent = (state, i18next) => {
-  renderFeeds(state, i18next);
-  renderPosts(state, i18next);
+const renderRssContent = (state) => {
+  renderFeeds(state);
+  renderPosts(state);
 };
 
-const render = (state, path, i18next, updateRss) => {
+const render = (state, path, updateRss) => {
   const input = document.querySelector('input');
   const addRssButton = document.querySelector('button[name=add]');
   if (path === 'form.status') {
     const { status } = state.form;
-    const feedbackText = i18next(`errors.${status}`);
+    const feedbackText = i18next.t(`errors.${status}`);
     addRssButton.removeAttribute('disabled');
     input.removeAttribute('readonly');
     switch (status) {
@@ -124,8 +125,8 @@ const render = (state, path, i18next, updateRss) => {
         addRssButton.setAttribute('disabled', true);
         break;
       case 'success':
-        renderRssContent(state, i18next);
-        updateRss(state, renderPosts, i18next);
+        renderRssContent(state);
+        updateRss(state, renderPosts);
         renderFeedback(status, feedbackText);
         break;
       case 'openedModal':
