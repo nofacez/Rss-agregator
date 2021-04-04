@@ -32,24 +32,25 @@ const timeoutCheckForNewPosts = (watchedState, renderPosts, i18n) => {
   }, 5000);
 };
 
-const state = {
-  form: {
-    status: 'initial',
-    value: '',
-    feedList: [],
-  },
-  rss: {
-    feeds: [],
-    posts: [],
-    modal: {
-      title: '',
-      description: '',
-      link: '',
-    },
-  },
-};
+
 
 const start = (t) => {
+  const state = {
+    form: {
+      status: 'initial',
+      value: '',
+      feedList: [],
+    },
+    rss: {
+      feeds: [],
+      posts: [],
+      modal: {
+        title: '',
+        description: '',
+        link: '',
+      },
+    },
+  };
   const input = document.querySelector('input');
   const addRssButton = document.querySelector('button[name=add]');
   const schema = yup.string().url();
