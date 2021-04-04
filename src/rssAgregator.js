@@ -4,9 +4,7 @@ import * as yup from 'yup';
 import onChange from 'on-change';
 import axios from 'axios';
 import _ from 'lodash';
-// import i18next from 'i18next';
 import parseRss from './rssParser.js';
-// import ru from './locales/ru';
 import render from './view.js';
 
 const formatUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}&disableCache=true`;
@@ -34,27 +32,28 @@ const timeoutCheckForNewPosts = (watchedState, renderPosts, i18n) => {
   }, 5000);
 };
 
+const state = {
+  form: {
+    status: 'initial',
+    value: '',
+    feedList: [],
+  },
+  rss: {
+    feeds: [],
+    posts: [],
+    modal: {
+      title: '',
+      description: '',
+      link: '',
+    },
+  },
+};
+
 const start = (t) => {
   const input = document.querySelector('input');
   const addRssButton = document.querySelector('button[name=add]');
-  // const previewButton = document.querySelector('button[data-toggle=modal]');
   const schema = yup.string().url();
-  const state = {
-    form: {
-      status: 'initial',
-      value: '',
-      feedList: [],
-    },
-    rss: {
-      feeds: [],
-      posts: [],
-      modal: {
-        title: '',
-        description: '',
-        link: '',
-      },
-    },
-  };
+
   const watchedState = onChange(state, (path) => render(watchedState, path, t, timeoutCheckForNewPosts));
 
   addRssButton.addEventListener('click', (e) => {
@@ -77,10 +76,6 @@ const start = (t) => {
               watchedState.rss.feeds.push({ ...feed });
               const previousPosts = watchedState.rss.posts;
               watchedState.rss.posts = [...posts, ...previousPosts];
-              // posts.forEach((post) => {
-              //   const id = _.uniqueId();
-              //   watchedState.rss.posts.push({ ...post });
-              // });
               watchedState.form.value = '';
             }
             watchedState.form.status = status;

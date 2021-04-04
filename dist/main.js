@@ -49558,9 +49558,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-// import i18next from 'i18next';
 
-// import ru from './locales/ru';
 
 
 const formatUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}&disableCache=true`;
@@ -49588,27 +49586,28 @@ const timeoutCheckForNewPosts = (watchedState, renderPosts, i18n) => {
   }, 5000);
 };
 
+const state = {
+  form: {
+    status: 'initial',
+    value: '',
+    feedList: [],
+  },
+  rss: {
+    feeds: [],
+    posts: [],
+    modal: {
+      title: '',
+      description: '',
+      link: '',
+    },
+  },
+};
+
 const start = (t) => {
   const input = document.querySelector('input');
   const addRssButton = document.querySelector('button[name=add]');
-  // const previewButton = document.querySelector('button[data-toggle=modal]');
   const schema = yup__WEBPACK_IMPORTED_MODULE_0__.string().url();
-  const state = {
-    form: {
-      status: 'initial',
-      value: '',
-      feedList: [],
-    },
-    rss: {
-      feeds: [],
-      posts: [],
-      modal: {
-        title: '',
-        description: '',
-        link: '',
-      },
-    },
-  };
+
   const watchedState = on_change__WEBPACK_IMPORTED_MODULE_1___default()(state, (path) => (0,_view_js__WEBPACK_IMPORTED_MODULE_5__.default)(watchedState, path, t, timeoutCheckForNewPosts));
 
   addRssButton.addEventListener('click', (e) => {
@@ -49631,10 +49630,6 @@ const start = (t) => {
               watchedState.rss.feeds.push({ ...feed });
               const previousPosts = watchedState.rss.posts;
               watchedState.rss.posts = [...posts, ...previousPosts];
-              // posts.forEach((post) => {
-              //   const id = _.uniqueId();
-              //   watchedState.rss.posts.push({ ...post });
-              // });
               watchedState.form.value = '';
             }
             watchedState.form.status = status;
@@ -49714,9 +49709,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
 /* eslint-disable no-param-reassign */
 /* eslint-disable object-curly-newline */
-// import onChange from 'on-change';
-// import i18next from 'i18next';
-// import ru from './locales/ru';
 
 
 const renderFeedback = (status, feedback) => {
@@ -49749,6 +49741,27 @@ const updateModal = (state) => {
   modalBody.appendChild(modalDesctiption);
 };
 
+const preparePreviewButton = (button, post, state, cb, i18next) => {
+  const { id, postTitle, link, postDescription } = post;
+  button.setAttribute('type', 'button');
+  button.setAttribute('data-toggle', 'modal');
+  button.setAttribute('data-target', '#modal');
+  button.setAttribute('data-id', id);
+  button.classList.add('btn', 'btn-primary', 'btn-sm');
+  button.addEventListener('click', (e) => {
+    e.preventDefault();
+    // const currentPost = _.find(state.rss.posts, ['id', id]);
+    const currentPostIndex = lodash__WEBPACK_IMPORTED_MODULE_0___default().findIndex(state.rss.posts, ['id', id]);
+    state.form.status = 'openedModal';
+    state.rss.posts[currentPostIndex].status = 'read';
+    state.rss.modal.title = postTitle;
+    state.rss.modal.description = postDescription;
+    state.rss.modal.link = link;
+    updateModal(state);
+    cb(state, i18next);
+  });
+};
+
 const renderPosts = (state, i18next) => {
   const postsEl = document.querySelector('.posts');
   const ul = document.createElement('ul');
@@ -49757,29 +49770,14 @@ const renderPosts = (state, i18next) => {
   const h2 = document.createElement('h2');
   h2.innerHTML = i18next('content.postsHeader');
   postsEl.appendChild(h2);
-  state.rss.posts.forEach(({ id, postTitle, link, postDescription, status }) => {
+  state.rss.posts.forEach((post) => {
+    const { id, postTitle, link, status } = post;
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'justify-content-between', 'aligh-items-start', 'd-flex');
     const aTag = document.createElement('a');
     const previewButton = document.createElement('button');
     previewButton.textContent = i18next('buttons.previewButton');
-    previewButton.setAttribute('type', 'button');
-    previewButton.setAttribute('data-toggle', 'modal');
-    previewButton.setAttribute('data-target', '#modal');
-    previewButton.setAttribute('data-id', id);
-    previewButton.classList.add('btn', 'btn-primary', 'btn-sm');
-    previewButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      // const currentPost = _.find(state.rss.posts, ['id', id]);
-      const currentPostIndex = lodash__WEBPACK_IMPORTED_MODULE_0___default().findIndex(state.rss.posts, ['id', id]);
-      state.form.status = 'openedModal';
-      state.rss.posts[currentPostIndex].status = 'read';
-      state.rss.modal.title = postTitle;
-      state.rss.modal.description = postDescription;
-      state.rss.modal.link = link;
-      updateModal(state);
-      renderPosts(state, i18next);
-    });
+    preparePreviewButton(previewButton, post, state, renderPosts, i18next);
     aTag.setAttribute('href', link);
     aTag.setAttribute('data-id', id);
     const postTextWeight = status === 'read' ? 'font-weight-normal' : 'font-weight-bold';

@@ -1,8 +1,5 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable object-curly-newline */
-// import onChange from 'on-change';
-// import i18next from 'i18next';
-// import ru from './locales/ru';
 import _ from 'lodash';
 
 const renderFeedback = (status, feedback) => {
@@ -35,6 +32,27 @@ const updateModal = (state) => {
   modalBody.appendChild(modalDesctiption);
 };
 
+const preparePreviewButton = (button, post, state, cb, i18next) => {
+  const { id, postTitle, link, postDescription } = post;
+  button.setAttribute('type', 'button');
+  button.setAttribute('data-toggle', 'modal');
+  button.setAttribute('data-target', '#modal');
+  button.setAttribute('data-id', id);
+  button.classList.add('btn', 'btn-primary', 'btn-sm');
+  button.addEventListener('click', (e) => {
+    e.preventDefault();
+    // const currentPost = _.find(state.rss.posts, ['id', id]);
+    const currentPostIndex = _.findIndex(state.rss.posts, ['id', id]);
+    state.form.status = 'openedModal';
+    state.rss.posts[currentPostIndex].status = 'read';
+    state.rss.modal.title = postTitle;
+    state.rss.modal.description = postDescription;
+    state.rss.modal.link = link;
+    updateModal(state);
+    cb(state, i18next);
+  });
+};
+
 const renderPosts = (state, i18next) => {
   const postsEl = document.querySelector('.posts');
   const ul = document.createElement('ul');
@@ -43,29 +61,14 @@ const renderPosts = (state, i18next) => {
   const h2 = document.createElement('h2');
   h2.innerHTML = i18next('content.postsHeader');
   postsEl.appendChild(h2);
-  state.rss.posts.forEach(({ id, postTitle, link, postDescription, status }) => {
+  state.rss.posts.forEach((post) => {
+    const { id, postTitle, link, status } = post;
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'justify-content-between', 'aligh-items-start', 'd-flex');
     const aTag = document.createElement('a');
     const previewButton = document.createElement('button');
     previewButton.textContent = i18next('buttons.previewButton');
-    previewButton.setAttribute('type', 'button');
-    previewButton.setAttribute('data-toggle', 'modal');
-    previewButton.setAttribute('data-target', '#modal');
-    previewButton.setAttribute('data-id', id);
-    previewButton.classList.add('btn', 'btn-primary', 'btn-sm');
-    previewButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      // const currentPost = _.find(state.rss.posts, ['id', id]);
-      const currentPostIndex = _.findIndex(state.rss.posts, ['id', id]);
-      state.form.status = 'openedModal';
-      state.rss.posts[currentPostIndex].status = 'read';
-      state.rss.modal.title = postTitle;
-      state.rss.modal.description = postDescription;
-      state.rss.modal.link = link;
-      updateModal(state);
-      renderPosts(state, i18next);
-    });
+    preparePreviewButton(previewButton, post, state, renderPosts, i18next);
     aTag.setAttribute('href', link);
     aTag.setAttribute('data-id', id);
     const postTextWeight = status === 'read' ? 'font-weight-normal' : 'font-weight-bold';
