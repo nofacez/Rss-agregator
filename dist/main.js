@@ -49567,10 +49567,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _rssParser_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./rssParser.js */ "./src/rssParser.js");
-/* harmony import */ var _view_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./view.js */ "./src/view.js");
-/* eslint-disable max-len */
-/* eslint-disable import/extensions */
+/* harmony import */ var _rssParser__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./rssParser */ "./src/rssParser.js");
+/* harmony import */ var _view__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./view */ "./src/view.js");
 
 
 
@@ -49585,10 +49583,8 @@ const getNewPosts = (state, renderPosts) => {
   state.form.feedList.forEach(async (url) => {
     const response = await axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url));
     const rssContent = response.data.contents;
-    const { posts } = (0,_rssParser_js__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent);
-    const newPosts = posts
-      .map((item) => ({ ...item }))
-      .filter(({ link }) => !lodash__WEBPACK_IMPORTED_MODULE_3___default().includes(oldPostsLinks, link));
+    const { posts } = (0,_rssParser__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent);
+    const newPosts = posts.filter(({ link }) => !lodash__WEBPACK_IMPORTED_MODULE_3___default().includes(oldPostsLinks, link));
     newPosts.forEach((post) => state.rss.posts.unshift(post));
     renderPosts(state);
   });
@@ -49603,26 +49599,26 @@ const timeoutCheckForNewPosts = (watchedState, renderPosts) => {
 
 const start = (state) => {
   const input = document.querySelector('input');
-  const addRssButton = document.querySelector('button[name=add]');
+  const form = document.querySelector('.rss-form');
   const schema = yup__WEBPACK_IMPORTED_MODULE_0__.string().url();
 
-  const watchedState = on_change__WEBPACK_IMPORTED_MODULE_1___default()(state, (path) => (0,_view_js__WEBPACK_IMPORTED_MODULE_5__.default)(watchedState, path, timeoutCheckForNewPosts));
+  const watchedState = on_change__WEBPACK_IMPORTED_MODULE_1___default()(state, (path) => (
+    (0,_view__WEBPACK_IMPORTED_MODULE_5__.default)(watchedState, path, timeoutCheckForNewPosts)
+  ));
 
-  addRssButton.addEventListener('click', async (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const url = watchedState.form.value;
     watchedState.form.status = 'checking';
     if (watchedState.form.feedList.includes(url)) {
       watchedState.form.status = 'alreadyAddedRss';
-    } else if (watchedState.form.value.length === 0) {
-      watchedState.form.status = 'unfilled';
     } else {
       try {
         await schema.validateSync(url);
         try {
           const response = await axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url));
           const rssContent = response.data.contents;
-          const { status, feed, posts } = (0,_rssParser_js__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent, url);
+          const { status, feed, posts } = (0,_rssParser__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent, url);
           if (status === 'success') {
             watchedState.form.feedList.unshift(url);
             watchedState.rss.feeds.push({ ...feed });
@@ -49856,8 +49852,9 @@ const render = (state, path, updateRss) => {
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		if(__webpack_module_cache__[moduleId]) {
-/******/ 			return __webpack_module_cache__[moduleId].exports;
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {

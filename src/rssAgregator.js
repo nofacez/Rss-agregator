@@ -1,11 +1,9 @@
-/* eslint-disable max-len */
-/* eslint-disable import/extensions */
 import * as yup from 'yup';
 import onChange from 'on-change';
 import axios from 'axios';
 import _ from 'lodash';
-import parseRss from './rssParser.js';
-import render from './view.js';
+import parseRss from './rssParser';
+import render from './view';
 
 const formatUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(url)}&disableCache=true`;
 
@@ -15,9 +13,7 @@ const getNewPosts = (state, renderPosts) => {
     const response = await axios.get(formatUrl(url));
     const rssContent = response.data.contents;
     const { posts } = parseRss(rssContent);
-    const newPosts = posts
-      .map((item) => ({ ...item }))
-      .filter(({ link }) => !_.includes(oldPostsLinks, link));
+    const newPosts = posts.filter(({ link }) => !_.includes(oldPostsLinks, link));
     newPosts.forEach((post) => state.rss.posts.unshift(post));
     renderPosts(state);
   });
@@ -32,19 +28,19 @@ const timeoutCheckForNewPosts = (watchedState, renderPosts) => {
 
 const start = (state) => {
   const input = document.querySelector('input');
-  const addRssButton = document.querySelector('button[name=add]');
+  const form = document.querySelector('.rss-form');
   const schema = yup.string().url();
 
-  const watchedState = onChange(state, (path) => render(watchedState, path, timeoutCheckForNewPosts));
+  const watchedState = onChange(state, (path) => (
+    render(watchedState, path, timeoutCheckForNewPosts)
+  ));
 
-  addRssButton.addEventListener('click', async (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const url = watchedState.form.value;
     watchedState.form.status = 'checking';
     if (watchedState.form.feedList.includes(url)) {
       watchedState.form.status = 'alreadyAddedRss';
-    } else if (watchedState.form.value.length === 0) {
-      watchedState.form.status = 'unfilled';
     } else {
       try {
         await schema.validateSync(url);
