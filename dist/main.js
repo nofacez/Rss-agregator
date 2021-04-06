@@ -49598,7 +49598,7 @@ const timeoutCheckForNewPosts = (watchedState, renderPosts) => {
 };
 
 const start = (state) => {
-  const input = document.querySelector('input');
+  // const input = document.querySelector('input');
   const form = document.querySelector('.rss-form');
   const schema = yup__WEBPACK_IMPORTED_MODULE_0__.string().url();
 
@@ -49612,31 +49612,31 @@ const start = (state) => {
     watchedState.form.status = 'checking';
     if (watchedState.form.feedList.includes(url)) {
       watchedState.form.status = 'alreadyAddedRss';
-    } else {
+      return;
+    }
+    try {
+      await schema.validateSync(url);
       try {
-        await schema.validateSync(url);
-        try {
-          const response = await axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url));
-          const rssContent = response.data.contents;
-          const { status, feed, posts } = (0,_rssParser__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent, url);
-          if (status === 'success') {
-            watchedState.form.feedList.unshift(url);
-            watchedState.rss.feeds.push({ ...feed });
-            const previousPosts = watchedState.rss.posts;
-            watchedState.rss.posts = [...posts, ...previousPosts];
-            watchedState.form.value = '';
-          }
-          watchedState.form.status = status;
-        } catch {
-          watchedState.form.status = 'networkProblems';
+        const response = await axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url));
+        const rssContent = response.data.contents;
+        const { status, feed, posts } = (0,_rssParser__WEBPACK_IMPORTED_MODULE_4__.default)(rssContent, url);
+        if (status === 'success') {
+          watchedState.form.feedList.unshift(url);
+          watchedState.rss.feeds.push({ ...feed });
+          const previousPosts = watchedState.rss.posts;
+          watchedState.rss.posts = [...posts, ...previousPosts];
+          watchedState.form.value = '';
         }
+        watchedState.form.status = status;
       } catch {
-        watchedState.form.status = 'invalidUrl';
+        watchedState.form.status = 'networkProblems';
       }
+    } catch {
+      watchedState.form.status = 'invalidUrl';
     }
   });
 
-  input.addEventListener('input', (e) => {
+  form.addEventListener('input', (e) => {
     watchedState.form.value = e.target.value;
   });
 };
