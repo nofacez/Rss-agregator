@@ -43,7 +43,7 @@ const start = (state) => {
       return;
     }
     try {
-      await schema.validateSync(url);
+      schema.validateSync(url);
       try {
         const response = await axios.get(formatUrl(url));
         const rssContent = response.data.contents;

@@ -6,7 +6,6 @@ export default {
       invalidUrl: 'Ссылка должна быть валидным URL',
       missingRss: 'Ресурс не содержит валидный RSS',
       alreadyAddedRss: 'RSS уже существует',
-      unfilled: 'Введите URL',
     },
     content: {
       feedHeader: 'Фиды',

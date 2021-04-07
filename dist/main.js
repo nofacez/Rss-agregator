@@ -49534,7 +49534,6 @@ __webpack_require__.r(__webpack_exports__);
       invalidUrl: 'Ссылка должна быть валидным URL',
       missingRss: 'Ресурс не содержит валидный RSS',
       alreadyAddedRss: 'RSS уже существует',
-      unfilled: 'Введите URL',
     },
     content: {
       feedHeader: 'Фиды',
@@ -49598,7 +49597,6 @@ const timeoutCheckForNewPosts = (watchedState, renderPosts) => {
 };
 
 const start = (state) => {
-  // const input = document.querySelector('input');
   const form = document.querySelector('.rss-form');
   const schema = yup__WEBPACK_IMPORTED_MODULE_0__.string().url();
 
@@ -49615,7 +49613,7 @@ const start = (state) => {
       return;
     }
     try {
-      await schema.validateSync(url);
+      schema.validateSync(url);
       try {
         const response = await axios__WEBPACK_IMPORTED_MODULE_2___default().get(formatUrl(url));
         const rssContent = response.data.contents;
